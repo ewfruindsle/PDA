@@ -54,17 +54,18 @@ public class PDA {
         int count = 1;
         String poppedValue;
         String formattedString;
-        convertToPdaInputFormat(strForAnalysis);
-        currentInputElement = getNextInput();
-        stackOfPDA.push("$");
-        stackOfPDA.push("E");
-        try (FileWriter writer = new FileWriter("result.txt", false)) {
+        try (FileWriter writer = new FileWriter("result.txt",true)) {
             writer.write("INPUT STRING: " + strForAnalysis + "\n");
-            writer.write("___________________________________________________________\n");
-            writer.write("| № |           STACK           |   INPUT   |    OUTPUT    |\n");
-            writer.write("___________________________________________________________\n");
-            formattedString = String.format("|%-3d|%-27s|%-11s|              |\n", count, stackOfPDA,strForAnalysis);
+            writer.write("_________________________________________________________________________\n");
+            writer.write("| № |                STACK                |     INPUT     |    OUTPUT    |\n");
+            writer.write("_________________________________________________________________________\n");
+            strForAnalysis = strForAnalysis + "$";
+            formattedString = String.format("|%-3d|%-37s|%-15s|              |\n", count, stackOfPDA,strForAnalysis);
             writer.write(formattedString);
+            convertToPdaInputFormat(strForAnalysis);
+            currentInputElement = getNextInput();
+            stackOfPDA.push("$");
+            stackOfPDA.push("E");
             count++;
             while (true) {
                 poppedValue = stackOfPDA.pop();
@@ -73,22 +74,22 @@ public class PDA {
                         poppedValue.equals("*") || poppedValue.equals(")") || poppedValue.equals("(") || poppedValue.equals("eps")) {
                     currentInputElement = getNextInput();
                     strForAnalysis = strForAnalysis.substring(1);
-                    formattedString = String.format("|%-3d|%-27s|%-11s|              |\n", count, stackOfPDA,strForAnalysis);
+                    formattedString = String.format("|%-3d|%-37s|%-15s|              |\n", count, stackOfPDA,strForAnalysis);
                     writer.write(formattedString);
 
                 } else if (poppedValue.equals("error")) {
-                    writer.write("|___________________ERROR OCCURRED__________________________|");
+                    writer.write("|___________________________ERROR OCCURRED_______________________________|");
                     break;
                 } else {
                     currentState = PDA_STATES.valueOf(poppedValue);
                     getNextStackString();
                     addStatesToStack();
-                    formattedString = String.format("|%-3d|%-27s|%-11s|%-2s -> %-8s|\n", count, stackOfPDA,strForAnalysis,poppedValue,getNextStackString());
+                    formattedString = String.format("|%-3d|%-37s|%-15s|%-2s -> %-8s|\n", count, stackOfPDA,strForAnalysis,poppedValue,getNextStackString());
                     writer.write(formattedString);
                 }
                 count++;
             }
-            writer.write("___________________________________________________________\n\n");
+            writer.write("_________________________________________________________________________\n\n");
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
